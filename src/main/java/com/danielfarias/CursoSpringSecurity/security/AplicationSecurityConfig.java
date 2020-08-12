@@ -1,10 +1,14 @@
 package com.danielfarias.CursoSpringSecurity.security;
 
-import static com.danielfarias.CursoSpringSecurity.security.ApplicationUserRole.*;
+import static com.danielfarias.CursoSpringSecurity.security.ApplicationUserRole.ADMIN;
+import static com.danielfarias.CursoSpringSecurity.security.ApplicationUserRole.ADMIN_TRAINEE;
+import static com.danielfarias.CursoSpringSecurity.security.ApplicationUserRole.STUDENT;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -16,6 +20,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true) //Ativa as anotation @PreAuthorize nos métodos da API
 public class AplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	private final PasswordEncoder passwordEncoder;
@@ -27,11 +32,25 @@ public class AplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
+		//OBS: A ordem que os antMatchers são definidos importa
 		http
+			.csrf().disable()
 			.authorizeRequests()
 			.antMatchers("/", "index", "/css/*", "/js/*") //Todos esses arquivos os URLs
 			.permitAll() //serão permitidos de serem acessados por qualquer usuário mesmo sem estarem logados
 			.antMatchers("/api/**").hasRole(STUDENT.name()) //Tudo que vem depois de /api só pode ser acessado pela role STUDENT
+			//Só pode executar esses métodos http em /management/api quem possui a permissão de COURSE_WRITE
+				/*
+				 * .antMatchers(HttpMethod.DELETE,
+				 * "/management/api/**").hasAnyAuthority(ApplicationUserPermission.COURSE_WRITE.
+				 * getPermission()) .antMatchers(HttpMethod.POST,
+				 * "/management/api/**").hasAnyAuthority(ApplicationUserPermission.COURSE_WRITE.
+				 * getPermission()) .antMatchers(HttpMethod.PUT,
+				 * "/management/api/**").hasAnyAuthority(ApplicationUserPermission.COURSE_WRITE.
+				 * getPermission()) //Só pode executar o método GET em /management/api quem tem
+				 * a role de ADMIN e ADMIN_TRAINEE .antMatchers(HttpMethod.GET,
+				 * "/management/api/**").hasAnyRole(ADMIN.name(), ADMIN_TRAINEE.name())
+				 */
 			.anyRequest() //Qualquer requisição
 			.authenticated()// Deve ser autenticada
 			.and()
@@ -47,16 +66,25 @@ public class AplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 	UserDetails danielUser = User.builder()
 			.username("daniel")
 			.password(passwordEncoder.encode("123456"))
-			.roles(STUDENT.name()) //ROLE_STUDENT internamente
+			//.roles(STUDENT.name()) //ROLE_STUDENT internamente
+			.authorities(STUDENT.getGrantedAuthorities())
 			.build();
 	
 	UserDetails IzabelUser = User.builder()
 			.username("izabel")
 			.password(passwordEncoder.encode("123456"))
-			.roles(ADMIN.name()) //ADMIN_STUDENT internamente
+			//.roles(ADMIN.name()) //ADMIN_STUDENT 
+			.authorities(ADMIN.getGrantedAuthorities())
 			.build();
 	
-	return new InMemoryUserDetailsManager(danielUser, IzabelUser);
+	UserDetails LuizianeUser = User.builder()
+			.username("luiziane")
+			.password(passwordEncoder.encode("123456"))
+			//.roles(ADMIN_TRAINEE.name()) //ROLE_ADMIN_STUDENT 
+			.authorities(ADMIN_TRAINEE.getGrantedAuthorities())
+			.build();
+	
+	return new InMemoryUserDetailsManager(danielUser, IzabelUser, LuizianeUser);
 	}
 	
 	

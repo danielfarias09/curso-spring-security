@@ -21,4 +21,10 @@ public class Student {
 		return studentName;
 	}
 
+
+	@Override
+	public String toString() {
+		return "studentId= " + studentId + " studentName=" + studentName;
+	}
+
 }

@@ -7,7 +7,6 @@ import static com.danielfarias.CursoSpringSecurity.security.ApplicationUserRole.
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -34,23 +34,13 @@ public class AplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception{
 		//OBS: A ordem que os antMatchers são definidos importa
 		http
-			.csrf().disable()
+		//É recomendado usar CSRF quando a requisição do serviço pode ser procesada por um navegador
+			.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())// Evita que a aplicação sofra este tipo de ataque através da geração de um token aleatório por parte da aplicação, que deve ser enviado a cada requisição do cliente através do header.
+			.and()
 			.authorizeRequests()
 			.antMatchers("/", "index", "/css/*", "/js/*") //Todos esses arquivos os URLs
 			.permitAll() //serão permitidos de serem acessados por qualquer usuário mesmo sem estarem logados
 			.antMatchers("/api/**").hasRole(STUDENT.name()) //Tudo que vem depois de /api só pode ser acessado pela role STUDENT
-			//Só pode executar esses métodos http em /management/api quem possui a permissão de COURSE_WRITE
-				/*
-				 * .antMatchers(HttpMethod.DELETE,
-				 * "/management/api/**").hasAnyAuthority(ApplicationUserPermission.COURSE_WRITE.
-				 * getPermission()) .antMatchers(HttpMethod.POST,
-				 * "/management/api/**").hasAnyAuthority(ApplicationUserPermission.COURSE_WRITE.
-				 * getPermission()) .antMatchers(HttpMethod.PUT,
-				 * "/management/api/**").hasAnyAuthority(ApplicationUserPermission.COURSE_WRITE.
-				 * getPermission()) //Só pode executar o método GET em /management/api quem tem
-				 * a role de ADMIN e ADMIN_TRAINEE .antMatchers(HttpMethod.GET,
-				 * "/management/api/**").hasAnyRole(ADMIN.name(), ADMIN_TRAINEE.name())
-				 */
 			.anyRequest() //Qualquer requisição
 			.authenticated()// Deve ser autenticada
 			.and()

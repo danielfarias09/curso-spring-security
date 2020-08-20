@@ -52,7 +52,7 @@ public class AplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 		//É recomendado usar CSRF quando a requisição do serviço pode ser procesada por um navegador
 			.csrf().disable()
 			.sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)//JWT é statelles e sessão é salva no banco de dados
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)//JWT é statelles e sessão é a salva no banco de dados
 			.and()
 			.addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))//Um dos filtros até a requisição chegar na API
 			.addFilterAfter(new JwtTokenVerifierFilter(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class) //Filtro a ser executado logo após o primeiro

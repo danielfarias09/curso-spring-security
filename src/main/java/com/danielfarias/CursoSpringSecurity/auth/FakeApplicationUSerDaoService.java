@@ -30,6 +30,7 @@ public class FakeApplicationUSerDaoService  implements ApplicationUserDao{
 	}
 	
 
+	//Simula o acesso ao banco de dados
 	private List<ApplicationUser> getApplicationUsers(){
 		List<ApplicationUser> applicationUsers = Lists.newArrayList(
 				new ApplicationUser(

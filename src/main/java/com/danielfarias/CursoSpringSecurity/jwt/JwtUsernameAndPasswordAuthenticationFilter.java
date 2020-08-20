@@ -64,9 +64,9 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 		String token = Jwts.builder()//Monta o Json Web Token
 			.setSubject(authResult.getName()) //Adiciona o username
 			.claim("authorities", authResult.getAuthorities()) //Adiciona as autorizações ao token
-			.setIssuedAt(new java.util.Date())
+			.setIssuedAt(new java.util.Date())// Data de hoje
 			.setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))//Validate do Token
-			.signWith(secretKey)//Assina o Token (A chave deve ser segura longa e difícil de quebrar)
+			.signWith(secretKey)//Assina o Token com a chave passada(A chave deve ser segura longa e difícil de quebrar)
 			.compact();
 			
 		response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);

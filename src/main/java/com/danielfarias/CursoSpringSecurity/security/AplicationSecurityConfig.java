@@ -57,7 +57,7 @@ public class AplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 			.addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))//Um dos filtros até a requisição chegar na API
 			.addFilterAfter(new JwtTokenVerifierFilter(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class) //Filtro a ser executado logo após o primeiro
 			.authorizeRequests()
-			.antMatchers("/", "index", "/css/*", "/js/*", "/login") //Todos esses arquivos os URLs
+			.antMatchers("/", "index", "/css/*", "/js/*", "/login", "/register") //Todos esses arquivos, diretórios os URLs
 			.permitAll() //serão permitidos de serem acessados por qualquer usuário mesmo sem estarem logados
 			.antMatchers("/api/**").hasRole(STUDENT.name()) //Tudo que vem depois de /api só pode ser acessado pela role STUDENT
 			.anyRequest() //Qualquer requisição
@@ -74,6 +74,7 @@ public class AplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 
 
 	@Bean
+	//Registrando os providers que sero utilizados no momento da autenticação
 	public DaoAuthenticationProvider daoAuthenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setPasswordEncoder(passwordEncoder);

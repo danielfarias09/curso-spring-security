@@ -14,7 +14,7 @@ public class ApplicationUserService implements UserDetailsService{
 	
 
 	@Autowired
-	public ApplicationUserService(@Qualifier("fake") ApplicationUserDao applicationUserDao) {//Uso o @Qualifier para dizer explicitamente que eu quero intanciar essa implementação de ApplicationUserDao
+	public ApplicationUserService(@Qualifier("userDao") ApplicationUserDao applicationUserDao) {//Uso o @Qualifier para dizer explicitamente que eu quero instanciar essa implementação de ApplicationUserDao
 		this.applicationUserDao = applicationUserDao;
 	}
 

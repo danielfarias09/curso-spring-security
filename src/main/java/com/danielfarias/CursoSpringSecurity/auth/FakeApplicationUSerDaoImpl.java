@@ -14,12 +14,12 @@ import org.springframework.stereotype.Repository;
 import com.google.common.collect.Lists;
 
 @Repository("fake") //Dou esse nome ao Repository para o caso de precisar trocar a implementação da interface. 
-public class FakeApplicationUSerDaoService  implements ApplicationUserDao{
+public class FakeApplicationUSerDaoImpl implements ApplicationUserDao{
 	
 	private  final PasswordEncoder passwordEncoder;
 
 	@Autowired
-	public FakeApplicationUSerDaoService(PasswordEncoder passwordEncoder) {
+	public FakeApplicationUSerDaoImpl(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
